@@ -32,6 +32,8 @@ vim.o.showmode = false
 
 -- Enable break indent
 vim.o.breakindent = true
+vim.o.linebreak = true
+vim.opt.breakat = ' \t;:,!?-'
 vim.o.softtabstop = 2
 vim.o.tabstop = 4
 vim.o.shiftwidth = 4
