@@ -151,6 +151,17 @@ vim.api.nvim_create_autocmd({ 'FocusGained', 'BufEnter', 'CursorHold', 'CursorHo
   end,
 })
 
+-- Auto-save when switching buffers or losing focus
+vim.api.nvim_create_autocmd({ 'BufLeave', 'FocusLost' }, {
+  desc = 'Auto-save when switching buffers or losing focus',
+  group = vim.api.nvim_create_augroup('kickstart-autosave', { clear = true }),
+  callback = function(event)
+    if vim.bo[event.buf].modifiable and vim.bo[event.buf].modified and vim.fn.bufname(event.buf) ~= '' then
+      vim.cmd('silent! write')
+    end
+  end,
+})
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
