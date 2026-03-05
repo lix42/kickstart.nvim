@@ -304,6 +304,7 @@ require('lazy').setup({
       spec = {
         { '<leader>s', group = '[S]earch' },
         { '<leader>t', group = '[T]oggle' },
+        { '<leader>g', group = '[G]it' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
       },
     },
@@ -993,6 +994,25 @@ require('lazy').setup({
         section_separators = '',
       },
     },
+  },
+
+  { -- File icons for many plugins
+    'nvim-tree/nvim-web-devicons',
+    enabled = vim.g.have_nerd_font,
+    opts = {},
+  },
+
+  { -- Git diff viewer
+    'sindrets/diffview.nvim',
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    cmd = { 'DiffviewOpen', 'DiffviewFileHistory', 'DiffviewClose' },
+    keys = {
+      { '<leader>gd', '<cmd>DiffviewOpen<CR>', desc = '[G]it [D]iffview open' },
+      { '<leader>gh', '<cmd>DiffviewFileHistory %<CR>', desc = '[G]it file [H]istory' },
+      { '<leader>gH', '<cmd>DiffviewFileHistory<CR>', desc = '[G]it repo [H]istory' },
+      { '<leader>gc', '<cmd>DiffviewClose<CR>', desc = '[G]it diffview [C]lose' },
+    },
+    opts = {},
   },
 
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
