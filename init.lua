@@ -148,7 +148,7 @@ vim.api.nvim_create_autocmd({ 'FocusGained', 'BufEnter', 'CursorHold', 'CursorHo
   desc = 'Check if file needs to be reloaded from disk',
   group = vim.api.nvim_create_augroup('kickstart-checktime', { clear = true }),
   callback = function()
-    vim.cmd('checktime')
+    vim.cmd 'checktime'
   end,
 })
 
@@ -158,7 +158,7 @@ vim.api.nvim_create_autocmd({ 'BufLeave', 'FocusLost' }, {
   group = vim.api.nvim_create_augroup('kickstart-autosave', { clear = true }),
   callback = function(event)
     if vim.bo[event.buf].modifiable and vim.bo[event.buf].modified and vim.fn.bufname(event.buf) ~= '' then
-      vim.cmd('silent! write')
+      vim.cmd 'silent! write'
     end
   end,
 })
@@ -196,13 +196,13 @@ require('lazy').setup({
     opts = {
       auto_cmd = true,
       on_tab_options = {
-        ["expandtab"] = false,
+        ['expandtab'] = false,
       },
       on_space_options = {
-        ["expandtab"] = true,
-        ["tabstop"] = "detected",
-        ["softtabstop"] = "detected",
-        ["shiftwidth"] = "detected",
+        ['expandtab'] = true,
+        ['tabstop'] = 'detected',
+        ['softtabstop'] = 'detected',
+        ['shiftwidth'] = 'detected',
       },
     },
   },
@@ -892,11 +892,12 @@ require('lazy').setup({
   },
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
+    branch = 'main',
     build = ':TSUpdate',
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     config = function()
       -- Install parsers (new API - ensure_installed was removed)
-      require('nvim-treesitter').install({ 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' })
+      require('nvim-treesitter').install { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' }
     end,
     -- There are additional nvim-treesitter modules that you can use to interact
     -- with nvim-treesitter. You should go explore a few and see what interests you:
