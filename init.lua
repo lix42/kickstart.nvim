@@ -841,15 +841,12 @@ require('lazy').setup({
     -- change the command in the config to whatever the name of that colorscheme is.
     --
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    'catppuccin/nvim',
-    name = 'catppuccin',
+    'mhartington/oceanic-next',
     priority = 1000, -- Make sure to load this before all the other start plugins.
     config = function()
-      require('catppuccin').setup {
-        flavour = 'mocha',
-      }
-
-      vim.cmd.colorscheme 'catppuccin'
+      vim.g.oceanic_next_terminal_bold = 1
+      vim.g.oceanic_next_terminal_italic = 1
+      vim.cmd.colorscheme 'OceanicNext'
     end,
   },
 
@@ -983,10 +980,18 @@ require('lazy').setup({
     dependencies = { 'nvim-tree/nvim-web-devicons' },
     opts = {
       options = {
-        icons_enabled = vim.g.have_nerd_font, -- you already set this at the top
-        theme = 'catppuccin', -- picks colors from your current colorscheme
+        icons_enabled = vim.g.have_nerd_font,
+        theme = 'OceanicNext',
         component_separators = '',
-        section_separators = '',
+        section_separators = { left = '', right = '' },
+      },
+      sections = {
+        lualine_a = { { 'mode', separator = { left = '' }, right_padding = 2 } },
+        lualine_b = { 'filename', 'branch' },
+        lualine_c = { '%=' },
+        lualine_x = {},
+        lualine_y = { 'filetype', 'progress' },
+        lualine_z = { { 'location', separator = { right = '' }, left_padding = 2 } },
       },
     },
   },
