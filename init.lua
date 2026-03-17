@@ -833,7 +833,7 @@ require('lazy').setup({
     branch = 'main',
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter-intro`
     config = function()
-      local parsers = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' }
+      local parsers = { 'bash', 'c', 'c_sharp', 'css', 'diff', 'html', 'java', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'rust', 'typescript', 'tsx', 'vim', 'vimdoc' }
       require('nvim-treesitter').install(parsers)
       vim.api.nvim_create_autocmd('FileType', {
         callback = function(args)
@@ -856,6 +856,46 @@ require('lazy').setup({
           vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
         end,
       })
+    end,
+  },
+  {
+    'nvim-treesitter/nvim-treesitter-textobjects',
+    dependencies = { 'nvim-treesitter/nvim-treesitter' },
+    config = function()
+      local ts_select = require('nvim-treesitter-textobjects.select')
+      local ts_move = require('nvim-treesitter-textobjects.move')
+
+      require('nvim-treesitter-textobjects').setup {
+        select = { lookahead = true },
+        move = { set_jumps = true },
+      }
+
+      -- Select textobjects
+      local select_maps = {
+        { 'af', '@function.outer' },
+        { 'if', '@function.inner' },
+        { 'ac', '@class.outer' },
+        { 'ic', '@class.inner' },
+        { 'ab', '@block.outer' },
+        { 'ib', '@block.inner' },
+      }
+      for _, m in ipairs(select_maps) do
+        vim.keymap.set({ 'x', 'o' }, m[1], function() ts_select.select_textobject(m[2]) end)
+      end
+
+      -- Move keymaps
+      vim.keymap.set({ 'n', 'x', 'o' }, ']f', function() ts_move.goto_next_start('@function.outer') end, { desc = 'Next function start' })
+      vim.keymap.set({ 'n', 'x', 'o' }, ']F', function() ts_move.goto_next_end('@function.outer') end, { desc = 'Next function end' })
+      vim.keymap.set({ 'n', 'x', 'o' }, ']c', function() ts_move.goto_next_start('@class.outer') end, { desc = 'Next class start' })
+      vim.keymap.set({ 'n', 'x', 'o' }, ']C', function() ts_move.goto_next_end('@class.outer') end, { desc = 'Next class end' })
+      vim.keymap.set({ 'n', 'x', 'o' }, ']b', function() ts_move.goto_next_start('@block.outer') end, { desc = 'Next block start' })
+      vim.keymap.set({ 'n', 'x', 'o' }, ']B', function() ts_move.goto_next_end('@block.outer') end, { desc = 'Next block end' })
+      vim.keymap.set({ 'n', 'x', 'o' }, '[f', function() ts_move.goto_previous_start('@function.outer') end, { desc = 'Prev function start' })
+      vim.keymap.set({ 'n', 'x', 'o' }, '[F', function() ts_move.goto_previous_end('@function.outer') end, { desc = 'Prev function end' })
+      vim.keymap.set({ 'n', 'x', 'o' }, '[c', function() ts_move.goto_previous_start('@class.outer') end, { desc = 'Prev class start' })
+      vim.keymap.set({ 'n', 'x', 'o' }, '[C', function() ts_move.goto_previous_end('@class.outer') end, { desc = 'Prev class end' })
+      vim.keymap.set({ 'n', 'x', 'o' }, '[b', function() ts_move.goto_previous_start('@block.outer') end, { desc = 'Prev block start' })
+      vim.keymap.set({ 'n', 'x', 'o' }, '[B', function() ts_move.goto_previous_end('@block.outer') end, { desc = 'Prev block end' })
     end,
   },
   {
