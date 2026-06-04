@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neovim Config Guide</title>
+<style>
+  :root {
+    --bg: #1b2b34;
+    --bg-alt: #22333d;
+    --panel: #21333d;
+    --border: #34474f;
+    --fg: #cdd3de;
+    --muted: #8a9aa3;
+    --accent: #6699cc;
+    --accent2: #5fb3b3;
+    --green: #99c794;
+    --yellow: #fac863;
+    --red: #ec5f67;
+    --purple: #c594c5;
+    --kbd-bg: #2c3e48;
+    --kbd-border: #44606b;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    font-size: 16px;
+  }
+  .wrap { max-width: 920px; margin: 0 auto; padding: 0 24px 80px; }
+  header {
+    padding: 56px 0 32px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 8px;
+  }
+  header h1 {
+    margin: 0 0 8px;
+    font-size: 2.1rem;
+    color: #fff;
+    letter-spacing: -0.5px;
+  }
+  header p { margin: 0; color: var(--muted); font-size: 1.05rem; }
+  .leader-note {
+    display: inline-flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 18px;
+    padding: 8px 14px;
+    background: var(--bg-alt);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.92rem;
+    color: var(--fg);
+  }
+  nav.toc {
+    position: sticky;
+    top: 0;
+    background: rgba(27,43,52,0.95);
+    backdrop-filter: blur(6px);
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+    z-index: 10;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  nav.toc a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.85rem;
+    padding: 5px 12px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+  }
+  nav.toc a:hover { color: #fff; border-color: var(--border); background: var(--bg-alt); }
+  section { margin-bottom: 44px; }
+  h2 {
+    font-size: 1.5rem;
+    color: var(--accent);
+    margin: 0 0 6px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  h2 .ic { color: var(--accent2); margin-right: 8px; }
+  h3 {
+    font-size: 1.1rem;
+    color: var(--accent2);
+    margin: 26px 0 10px;
+  }
+  p { margin: 12px 0; }
+  .lead { color: var(--muted); }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  th, td {
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  th {
+    background: var(--bg-alt);
+    color: var(--yellow);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  tr:last-child td { border-bottom: none; }
+  td:first-child { white-space: nowrap; width: 1%; }
+  tbody tr:hover { background: rgba(102,153,204,0.06); }
+  kbd {
+    display: inline-block;
+    background: var(--kbd-bg);
+    border: 1px solid var(--kbd-border);
+    border-bottom-width: 2px;
+    border-radius: 6px;
+    padding: 1px 7px;
+    font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+    font-size: 0.82em;
+    color: #fff;
+    white-space: nowrap;
+  }
+  code {
+    font-family: "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+    font-size: 0.88em;
+    background: var(--bg-alt);
+    padding: 2px 6px;
+    border-radius: 5px;
+    color: var(--green);
+  }
+  pre {
+    background: #16242c;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    overflow-x: auto;
+    margin: 14px 0;
+  }
+  pre code { background: none; padding: 0; color: var(--fg); }
+  .cmt { color: var(--muted); }
+  .callout {
+    background: rgba(250,200,99,0.08);
+    border: 1px solid rgba(250,200,99,0.3);
+    border-left: 3px solid var(--yellow);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 18px 0;
+    font-size: 0.95rem;
+  }
+  .callout.warn {
+    background: rgba(236,95,103,0.08);
+    border-color: rgba(236,95,103,0.3);
+    border-left-color: var(--red);
+  }
+  .callout strong { color: #fff; }
+  ul { padding-left: 22px; }
+  li { margin: 6px 0; }
+  ol.loop { counter-reset: step; list-style: none; padding-left: 0; }
+  ol.loop li {
+    counter-increment: step;
+    position: relative;
+    padding: 8px 0 8px 44px;
+    margin: 0;
+  }
+  ol.loop li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 8px;
+    width: 28px;
+    height: 28px;
+    background: var(--accent);
+    color: var(--bg);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+  .grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin: 16px 0; }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .card h4 { margin: 0 0 6px; color: var(--purple); font-size: 1rem; }
+  .card p { margin: 0; font-size: 0.9rem; color: var(--muted); }
+  footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    color: var(--muted);
+    font-size: 0.85rem;
+    text-align: center;
+  }
+  a { color: var(--accent); }
+
+  /* ---- Print / PDF export ---- */
+  @media print {
+    :root {
+      --bg: #ffffff;
+      --bg-alt: #f3f4f6;
+      --panel: #ffffff;
+      --border: #cbd2d8;
+      --fg: #1b2b34;
+      --muted: #55636b;
+      --accent: #2f5d8a;
+      --accent2: #2a7d7d;
+      --yellow: #8a6d1a;
+      --purple: #7a4a7a;
+      --red: #b3343c;
+      --kbd-bg: #f3f4f6;
+      --kbd-border: #b9c1c8;
+    }
+    @page { margin: 16mm; }
+    html { font-size: 11pt; }
+    body { background: #fff; color: #1b2b34; }
+    .wrap { max-width: none; margin: 0; padding: 0; }
+
+    /* Drop interactive chrome */
+    nav.toc { display: none; }
+    header { padding: 0 0 16px; }
+    header h1 { color: #000; }
+    footer { color: #55636b; }
+
+    a { color: #1b2b34; text-decoration: none; }
+
+    /* Keep blocks intact across page breaks */
+    section { margin-bottom: 22px; page-break-inside: avoid; break-inside: avoid; }
+    h2 { page-break-after: avoid; break-after: avoid; }
+    h3 { page-break-after: avoid; break-after: avoid; }
+    table, pre, .callout, .card, ol.loop li { page-break-inside: avoid; break-inside: avoid; }
+    thead { display: table-header-group; }
+    tr { page-break-inside: avoid; }
+
+    /* Make borders/backgrounds render on print */
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .leader-note, table, pre, .callout, .card { box-shadow: none; }
+    tbody tr:hover { background: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Neovim Config — Editing Workflow Guide</h1>
+    <p>kickstart.nvim · kanagawa · vim.pack (Neovim 0.12+)</p>
+    <div class="leader-note">
+      <span>Leader is <kbd>,</kbd></span>
+      <span style="color:var(--border)">|</span>
+      <span>Local leader is <kbd>Space</kbd></span>
+    </div>
+  </header>
+
+  <nav class="toc">
+    <a href="#setup">Setup</a>
+    <a href="#nav">Find Files &amp; Text</a>
+    <a href="#tree">Explorer &amp; Buffers</a>
+    <a href="#lsp">LSP Jumps</a>
+    <a href="#flash">On-screen Jumps</a>
+    <a href="#git">Git Status</a>
+    <a href="#markdown">Markdown</a>
+    <a href="#misc">Other Shortcuts</a>
+    <a href="#loop">Typical Loop</a>
+  </nav>
+
+  <section id="setup">
+    <h2><span class="ic">▍</span>Setup — just open a folder</h2>
+    <p class="lead">No project setup needed. Open Neovim in your project root:</p>
+    <pre><code>cd ~/your-project
+nvim .          <span class="cmt"># or `nvim somefile.lua`</span></code></pre>
+    <p>What happens automatically:</p>
+    <ul>
+      <li><strong>vim.pack</strong> (Neovim's built-in plugin manager, 0.12+) loads plugins and self-installs them on first run — no external manager. Run <code>:lua vim.pack.update()</code> to update; versions are pinned in <code>nvim-pack-lock.json</code>.</li>
+      <li><strong>LSP</strong> attaches per-file via Mason. Configured servers: <code>lua_ls</code>, <code>ts_ls</code> (TS/JS + React JSX/TSX), <code>rust_analyzer</code>, <code>cssls</code>, <code>tailwindcss</code>, <code>html</code>, <code>omnisharp</code> (C#), <code>pyright</code> (Python) — plus <code>stylua</code> for formatting. Add more in the <code>servers = {}</code> table in <code>init.lua</code>; <code>:Mason</code> shows install status.</li>
+      <li><strong>Treesitter</strong> highlights &amp; indents (parsers auto-install when you open a new filetype).</li>
+      <li><strong>Auto-save</strong> on buffer-leave / focus-lost, and files auto-reload if changed on disk. You rarely type <code>:w</code>.</li>
+      <li><strong>neo-tree</strong> file explorer — press <kbd>\</kbd> to reveal the current file in a sidebar (and again to close it).</li>
+    </ul>
+  </section>
+
+  <section id="nav">
+    <h2><span class="ic">▍</span>Finding files &amp; text (Telescope)</h2>
+    <table>
+      <thead><tr><th>Key</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td><kbd>,sf</kbd></td><td><strong>Search files</strong> (fuzzy filename)</td></tr>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>p</kbd></td><td>Same file picker (ctrlp muscle memory)</td></tr>
+        <tr><td><kbd>,sg</kbd></td><td><strong>Live grep</strong> — search text across the whole project</td></tr>
+        <tr><td><kbd>,sw</kbd></td><td>Grep the <strong>word under cursor</strong> (works in visual too)</td></tr>
+        <tr><td><kbd>,/</kbd></td><td>Fuzzy search <strong>within current buffer</strong></td></tr>
+        <tr><td><kbd>,s/</kbd></td><td>Grep across <strong>open buffers only</strong></td></tr>
+        <tr><td><kbd>,s.</kbd></td><td>Recently opened files</td></tr>
+        <tr><td><kbd>,,</kbd></td><td>Switch between open <strong>buffers</strong></td></tr>
+        <tr><td><kbd>,sr</kbd></td><td><strong>Resume</strong> last search</td></tr>
+        <tr><td><kbd>,sd</kbd></td><td>Search diagnostics (errors / warnings)</td></tr>
+        <tr><td><kbd>,sn</kbd></td><td>Open your Neovim config files</td></tr>
+        <tr><td><kbd>,sh</kbd> / <kbd>,sk</kbd></td><td>Search help / keymaps (discovery)</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="tree">
+    <h2><span class="ic">▍</span>Explorer, buffers &amp; windows</h2>
+
+    <h3>File explorer (neo-tree)</h3>
+    <table>
+      <thead><tr><th>Key</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td><kbd>\</kbd></td><td><strong>Reveal current file</strong> in the sidebar tree — press again to close</td></tr>
+      </tbody>
+    </table>
+    <div class="callout">Telescope (<kbd>,sf</kbd> / <kbd>,sg</kbd>) is usually faster for jumping to a known file; reach for the tree when you want to browse structure or act on files (add / rename / delete) from the sidebar.</div>
+
+    <h3>Buffers (<kbd>,b</kbd> prefix)</h3>
+    <table>
+      <thead><tr><th>Key</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td><kbd>,,</kbd></td><td>Switch between open <strong>buffers</strong> (Telescope picker)</td></tr>
+        <tr><td><kbd>,bd</kbd></td><td><strong>Delete</strong> current buffer</td></tr>
+        <tr><td><kbd>,bD</kbd></td><td>Delete <strong>all</strong> buffers (keeps Neovim open)</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Windows / splits (<kbd>,w</kbd> prefix)</h3>
+    <table>
+      <thead><tr><th>Key</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td><kbd>Ctrl</kbd>+<kbd>h/j/k/l</kbd></td><td>Move focus between windows (new splits open right / below)</td></tr>
+        <tr><td><kbd>,wv</kbd> / <kbd>,ws</kbd></td><td>Split <strong>v</strong>ertical / horizontal (<strong>s</strong>plit)</td></tr>
+        <tr><td><kbd>,wh/wj/wk/wl</kbd></td><td>Focus window left / down / up / right</td></tr>
+        <tr><td><kbd>,wq</kbd></td><td>Quit (close) this window</td></tr>
+        <tr><td><kbd>,wo</kbd></td><td>Close all <strong>o</strong>ther windows</td></tr>
+        <tr><td><kbd>,w=</kbd></td><td>Equalize window sizes</td></tr>
+        <tr><td><kbd>,wT</kbd></td><td>Move this window to a new <strong>t</strong>ab</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section id="lsp">
+    <h2><span class="ic">▍</span>Jumping by meaning (LSP)</h2>
+    <p class="lead">Active only when a language server is attached. <code>gr</code> / <code>g</code> prefixes.</p>
+    <table>
+      <thead><tr><th>Key</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td><kbd>grd</kbd></td><td><strong>Goto definition</strong> (jump back with <kbd>Ctrl</kbd>+<kbd>t</kbd>)</td></tr>
+        <tr><td><kbd>grr</kbd></td><td>Find <strong>references</strong></td></tr>
+        <tr><td><kbd>gri</kbd></td><td>Goto <strong>implementation</strong></td></tr>
+        <tr><td><kbd>grt</kbd></td><td>Goto <strong>type</strong> definition</td></tr>
+        <tr><td><kbd>grD</kbd></td><td>Goto declaration (e.g. C header)</td></tr>
+        <tr><td><kbd>grn</kbd></td><td><strong>Rename</strong> symbol across files</td></tr>
+        <tr><td><kbd>gra</kbd></td><td><strong>Code action</strong> (quick fixes)</td></tr>
+        <tr><td><kbd>gO</kbd></td><td>Document symbols (this file)</td></tr>
+        <tr><td><kbd>gW</kbd></td><td>Workspace symbols (whole project)</td></tr>
+        <tr><td><kbd>K</kbd></td><td>Hover docs</td></tr>
+        <tr><td><kbd>[d</kbd> / <kbd>]d</kbd></td><td>Prev / next diagnostic (auto-opens float)</td></tr>
+      </tbody>
+    </table>
+    <div class="callout warn">
+      <strong>Note:</strong> LSP keymaps only work once a language server is installed for that filetype. Check <code>:Mason</code> and add the server name to the <code>servers</code> table in <code>init.lua</code> if jumps aren't working.
+    </div>
+  </section>
+
+  <section id="flash">
+    <h2><span class="ic">▍</span>On-screen jumps &amp; splits</h2>
+    <div class="grid3">
+      <div class="card">
+        <h4>flash.nvim</h4>
+        <p><kbd>s</kbd> + 2 chars → jump anywhere visible (label motion). <kbd>S</kbd> → jump to a Treesitter node.</p>
+      </div>
+      <div class="card">
+        <h4>Splits</h4>
+        <p><kbd>Ctrl</kbd>+<kbd>h/j/k/l</kbd> move focus between windows; <kbd>,w</kbd> prefix manages them (see Explorer &amp; Buffers).</p>
+      </div>
+      <div class="card">
+        <h4>which-key</h4>
+        <p>Press <kbd>,</kbd> (or <kbd>g</kbd>) and pause — a live menu of follow-up keys pops up.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="git">
+    <h2><span class="ic">▍</span>Checking git status</h2>
+    <p class="lead">Three tools work together.</p>
+
+    <h3>1 · gitsigns — gutter &amp; per-hunk (<kbd>,h</kbd> prefix)</h3>
+    <p>Shows <code>+</code> / <code>~</code> / <code>_</code> in the sign column for added / changed / deleted lines.</p>
+    <table>
+      <thead><tr><th>Key</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td><kbd>,hs</kbd> / <kbd>,hr</kbd></td><td>Stage / reset hunk (also works on a visual selection)</td></tr>
+        <tr><td><kbd>,hp</kbd></td><td><strong>Preview hunk</strong> (<kbd>,hi</kbd> previews inline)</td></tr>
+        <tr><td><kbd>,hS</kbd> / <kbd>,hR</kbd></td><td>Stage / reset the whole buffer</td></tr>
+        <tr><td><kbd>,hd</kbd> / <kbd>,hD</kbd></td><td>Diff against index / last commit</td></tr>
+        <tr><td><kbd>,hb</kbd></td><td>Blame line (full)</td></tr>
+        <tr><td><kbd>]c</kbd> / <kbd>[c</kbd></td><td>Next / prev change</td></tr>
+        <tr><td><kbd>ih</kbd></td><td>Hunk text object (e.g. <kbd>vih</kbd>, <kbd>dih</kbd>)</td></tr>
+        <tr><td><kbd>,tb</kbd></td><td>Toggle line blame</td></tr>
+        <tr><td><kbd>,tw</kbd></td><td>Toggle intra-line word diff</td></tr>
+      </tbody>
+    </table>
+
+    <h3>2 · diffview.nvim — full diff UI (<kbd>,g</kbd> prefix)</h3>
+    <table>
+      <thead><tr><th>Key</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td><kbd>,gd</kbd></td><td><strong>Open diffview</strong> — side-by-side diff of all working-tree changes</td></tr>
+        <tr><td><kbd>,gh</kbd></td><td>File <strong>history</strong> of the current file</td></tr>
+        <tr><td><kbd>,gH</kbd></td><td><strong>Repo</strong> history (all commits)</td></tr>
+        <tr><td><kbd>,gc</kbd></td><td>Close diffview</td></tr>
+      </tbody>
+    </table>
+    <div class="callout">For a quick “what have I changed,” <kbd>,gd</kbd> is the one to reach for.</div>
+
+    <h3>3 · lualine statusline</h3>
+    <p>The bottom bar always shows the current <strong>git branch</strong> next to the filename.</p>
+  </section>
+
+  <section id="markdown">
+    <h2><span class="ic">▍</span>Markdown (<kbd>,m</kbd> prefix)</h2>
+    <p class="lead">Two complementary previews: render inside the editor, or open a live preview in the browser.</p>
+    <table>
+      <thead><tr><th>Key</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td><kbd>,mr</kbd></td><td><strong>Render</strong> markdown in-editor (render-markdown.nvim — headings, tables, code blocks, checkboxes). Toggles; hides itself in insert mode so you edit raw source.</td></tr>
+        <tr><td><kbd>,mp</kbd></td><td><strong>Preview</strong> in the browser (markdown-preview.nvim — live-syncing). Toggles the preview tab.</td></tr>
+      </tbody>
+    </table>
+    <div class="callout">First use of <kbd>,mp</kbd> needs the preview binary; it downloads automatically when the plugin installs. If it ever errors, run <code>:call mkdp#util#install()</code> once.</div>
+  </section>
+
+  <section id="misc">
+    <h2><span class="ic">▍</span>Other useful shortcuts</h2>
+    <table>
+      <thead><tr><th>Key</th><th>Action</th></tr></thead>
+      <tbody>
+        <tr><td><kbd>,f</kbd></td><td><strong>Format</strong> buffer (conform.nvim; also formats on save)</td></tr>
+        <tr><td><kbd>Cmd</kbd>+<kbd>/</kbd></td><td>Toggle comment (normal / insert / visual)</td></tr>
+        <tr><td><kbd>,q</kbd></td><td>Diagnostics into quickfix list</td></tr>
+        <tr><td><kbd>,th</kbd></td><td>Toggle LSP inlay hints</td></tr>
+        <tr><td><kbd>Y</kbd> (visual)</td><td>Yank to <strong>system clipboard</strong> (plain <kbd>y</kbd> stays in nvim)</td></tr>
+        <tr><td><kbd>ci'</kbd> <kbd>va)</kbd></td><td>mini.ai text objects</td></tr>
+        <tr><td><kbd>saiw)</kbd></td><td>Surround add · <kbd>sd'</kbd> delete · <kbd>sr)'</kbd> replace</td></tr>
+      </tbody>
+    </table>
+    <div class="callout warn">
+      <strong>Note:</strong> <kbd>Cmd</kbd>+<kbd>/</kbd> commenting depends on your terminal forwarding the <code>Cmd</code> key, which not all do.
+    </div>
+  </section>
+
+  <section id="loop">
+    <h2><span class="ic">▍</span>Typical editing loop</h2>
+    <ol class="loop">
+      <li><code>nvim .</code> in the repo.</li>
+      <li><kbd>,sf</kbd> / <kbd>Ctrl</kbd>+<kbd>p</kbd> to open a file, or <kbd>,sg</kbd> to grep for something.</li>
+      <li><kbd>grd</kbd> to jump to a definition, <kbd>Ctrl</kbd>+<kbd>t</kbd> to come back; <kbd>grr</kbd> for references.</li>
+      <li>Edit (auto-saves on buffer switch; <kbd>,f</kbd> to format).</li>
+      <li><kbd>grn</kbd> to rename, <kbd>gra</kbd> for quick-fixes.</li>
+      <li><kbd>,gd</kbd> to review your diff before committing.</li>
+    </ol>
+  </section>
+
+  <footer>
+    Generated from <code>init.lua</code> · Neovim kickstart config
+  </footer>
+</div>
+</body>
+</html>
