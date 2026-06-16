@@ -162,6 +162,10 @@
       "rev": "7d324792b7943e4aa16ad007212e6acc6f9fe335",
       "src": "https://github.com/nvim-telescope/telescope.nvim"
     },
+    "tiny-glimmer.nvim": {
+      "rev": "f26728abf811324d7ed6b035a11d7b76a27c06c3",
+      "src": "https://github.com/rachartier/tiny-glimmer.nvim"
+    },
     "todo-comments.nvim": {
       "rev": "31e3c38ce9b29781e4422fc0322eb0a21f4e8668",
       "src": "https://github.com/folke/todo-comments.nvim"
