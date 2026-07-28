@@ -755,6 +755,12 @@ do
       --
       -- See `:help blink-cmp-config-keymap` for defining your own keymap
       preset = 'default',
+
+      -- <Tab>/<S-Tab> only jump between snippet placeholders, which we don't use.
+      -- Freed up so <Tab> can accept Copilot's ghost text instead
+      -- (see `lua/custom/plugins/copilot.lua`).
+      ['<Tab>'] = false,
+      ['<S-Tab>'] = false,
     },
 
     appearance = {
@@ -770,7 +776,10 @@ do
     },
 
     sources = {
-      default = { 'lsp', 'path', 'snippets' },
+      -- No 'snippets' source: snippet collections are unused. LSP servers may still
+      -- return snippet-shaped items (blink always advertises snippetSupport), which
+      -- expand via LuaSnip below — there's just no <Tab> to jump placeholders.
+      default = { 'lsp', 'path' },
     },
 
     snippets = { preset = 'luasnip' },
