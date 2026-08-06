@@ -146,6 +146,10 @@
       "rev": "09833f72d5ba23de2e8bcae18f479f326f5f677a",
       "src": "https://github.com/mhartington/oceanic-next"
     },
+    "octo.nvim": {
+      "rev": "205f024d3ea4a3d81aac751b6bf8e2d01e0c204f",
+      "src": "https://github.com/pwntester/octo.nvim"
+    },
     "plenary.nvim": {
       "rev": "74b06c6c75e4eeb3108ec01852001636d85a932b",
       "src": "https://github.com/nvim-lua/plenary.nvim"
